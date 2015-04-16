@@ -19,6 +19,7 @@ class Sudoku:
         unsharp = self.image - blurred
         self.image = self.image + unsharp
         self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
+        #self.Canny = cv2.GaussianBlur(self.image,(3,3), 0)
         
         cv2.imwrite("output.jpg", self.Canny)
         
@@ -42,10 +43,23 @@ class Sudoku:
         
     def _findContour(self):
         contours, hierarchy = cv2.findContours(self.Canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        
-        img = cv2.drawContours(self.Canny, contours, -1, (0,255,0), 3)
-        cv2.imwrite("contours.jpg", img)
 
+        large_Contour = 0
+        max_area = 0
+        
+        for contour in contours:
+            print contour
+            area = cv2.contourArea(contour)
+            if area > 100:
+                perimeter = cv2.arcLength(contour, True)
+                approx = cv2.approxPolyDP(contour, 0.02*perimeter, True)
+                if area > max_area and len(approx)==4:
+                    large_Contour = contour
+                    max_area = area
+        
+        cv2.drawContours(self.image, [large_Contour], 0, (0,255,0), -1)
+        cv2.imwrite("contours.jpg", self.image)
+        
 
     
 if __name__ == '__main__':
