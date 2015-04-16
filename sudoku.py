@@ -11,23 +11,21 @@ class Sudoku:
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self._noiseRemove()
 
-        self._getBox()
+        #self._getBox()
+        self._findContour()
         
     def _noiseRemove(self):
         blurred = cv2.GaussianBlur(self.image,(5,5), 0)
         unsharp = self.image - blurred
         self.image = self.image + unsharp
-        #self.image = cv2.adaptiveThreshold(self.image,255,1,1,11,2)
         self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
-        #self.Canny = cv2.GaussianBlur(self.Canny,(5,5), 0)
-        #self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
         
         cv2.imwrite("output.jpg", self.Canny)
         
         
     def _getBox(self):
 
-        lines = cv2.HoughLines(self.Canny,1,np.pi/180,200)
+        lines = cv2.HoughLines(self.Canny,1,np.pi/180,150)
         for rho,theta in lines[0]:
             a = np.cos(theta)
             b = np.sin(theta)
@@ -42,8 +40,13 @@ class Sudoku:
 
         cv2.imwrite('houghlines3.jpg',self.image)
         
-    def _largestBlob(self):
-        pass
+    def _findContour(self):
+        contours, hierarchy = cv2.findContours(self.Canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        
+        img = cv2.drawContours(self.Canny, contours, -1, (0,255,0), 3)
+        cv2.imwrite("contours.jpg", img)
+
+
     
 if __name__ == '__main__':
     Sudoku("sudoku.jpg")
