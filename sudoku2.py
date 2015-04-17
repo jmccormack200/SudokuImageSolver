@@ -92,9 +92,9 @@ class Sudoku:
 	for a in range(1,82):
 	    imageString = ("output" + str(a) +  ".jpg")
 	    image = Image.open(imageString)
-	    image_file = image.convert('1')	
+	    #image_file = image.convert('1')	
             print "letter = " + str(a)  
-            print pytesseract.image_to_string(image)                        
+            print pytesseract.image_to_string(image, config='-psm 10')                 
                 
         
 if __name__ == "__main__":
