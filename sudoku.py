@@ -19,8 +19,8 @@ class Sudoku:
         unsharp = self.image - blurred
         self.image = self.image + unsharp
         self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
-        #self.Canny = cv2.GaussianBlur(self.image,(3,3), 0)
-        self.Laplacian = cv2.Laplacian(self.image,cv2.CV_64F)
+        self.Canny = cv2.GaussianBlur(self.image,(3,3), 0)
+        self.Laplacian = cv2.Laplacian(self.Canny,cv2.CV_64F,ksize=3)
         cv2.imwrite("output.jpg", self.Laplacian)
        # cv2.imwrite("output.jpg", self.Canny)
         
@@ -43,21 +43,20 @@ class Sudoku:
         cv2.imwrite('houghlines3.jpg',self.image)
         
     def _findContour(self):
-        contours, hierarchy = cv2.findContours(self.Canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+        self.image = cv2.imread("output.jpg")
+        self.image = cv2.cvtColor(self.Laplacian, cv2.COLOR_BGR2GRAY)
+        contours, hierarchy = cv2.findContours(self.image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        print(len(contours))
+        '''    
         large_Contour = 0
-        max_area = [0,0,0,0,0,0,0,0,0]
-        contour_list = [0,0,0,0,0,0,0,0,0]
-        
+        max_area = [0]*8
+        contour_list = [0]*8
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > 100:
                 perimeter = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.02*perimeter, True)
                 for a in range(len(max_area)-1,-1,-1):
-                    #print area
-                    #print a
-                    print max_area
                     if area > max_area[a] and len(approx)==4:
                         if a > 0:
                             for b in range(0,a):
@@ -66,12 +65,24 @@ class Sudoku:
                         contour_list[a] = contour
                         max_area[a] = area
                         break
-                    #print max_area
-        #print contour_list
         for a in range(len(contour_list)):
-            print contour_list[a][0]
             cv2.drawContours(self.image, contour_list, a, (0,255,0), 10)
         cv2.imwrite("contours.jpg", self.image)
+        '''
+        
+        biggest = None
+        max_area = 0
+        for i in contours:
+            area = cv2.contourArea(i)
+            if area > 100:
+                    peri = cv2.arcLength(i,True)
+                    approx = cv2.approxPolyDP(i,0.02*peri,True)
+                    if area > max_area and len(approx)==4:
+                            biggest = approx
+                            max_area = area
+        cv2.drawContours(self.image, [biggest], 0, (0,255,0), 10)
+        cv2.imwrite("contours.jpg", self.image)
+
         
 
     
