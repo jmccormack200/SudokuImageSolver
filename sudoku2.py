@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import math
 import pylab
-import image_slicer
+import pytesseract
 from matplotlib import pyplot as plt
 
 class Sudoku:
@@ -11,11 +11,11 @@ class Sudoku:
     def __init__(self, imagepath):
         self.image = cv2.imread(imagepath)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self._createBox()
-        self._gridSort()
-        self._warpGrid()
-        self._separteImage()
-
+        #self._createBox()
+        #self._gridSort()
+        #self._warpGrid()
+        #self._separteImage()
+        self._extract()
     
     def _createBox(self):
         self.laplacian = cv2.Laplacian(self.image, cv2.CV_8U)
@@ -86,7 +86,10 @@ class Sudoku:
                 segmentImage = np.zeros((56,56))
                 count += 1
                 
-                        
+    def _extract(self):
+        image = cv2.imread("output4.jpg")
+        
+        print pytesseract.image_to_string(image)                        
                 
         
 if __name__ == "__main__":

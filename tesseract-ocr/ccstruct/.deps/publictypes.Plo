@@ -1,0 +1,5 @@
+publictypes.lo: publictypes.cpp /usr/include/stdc-predef.h publictypes.h
+
+/usr/include/stdc-predef.h:
+
+publictypes.h:
