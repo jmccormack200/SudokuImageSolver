@@ -5,6 +5,7 @@ import math
 import pylab
 import pytesseract
 from matplotlib import pyplot as plt
+from PIL import Image
 
 class Sudoku:
     
@@ -87,9 +88,13 @@ class Sudoku:
                 count += 1
                 
     def _extract(self):
-        image = cv2.imread("output4.jpg")
-        
-        print pytesseract.image_to_string(image)                        
+        #image = cv2.imread("output4.jpg", cv2.CV_LOAD_IMAGE_GRAYSCALE)
+	for a in range(1,82):
+	    imageString = ("output" + str(a) +  ".jpg")
+	    image = Image.open(imageString)
+	    image_file = image.convert('1')	
+            print "letter = " + str(a)  
+            print pytesseract.image_to_string(image)                        
                 
         
 if __name__ == "__main__":
