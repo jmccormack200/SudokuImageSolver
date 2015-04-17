@@ -11,6 +11,7 @@ class Sudoku:
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         self._createBox()
         self._gridSort()
+        self._warpGrid()
 
     
     def _createBox(self):
@@ -50,11 +51,19 @@ class Sudoku:
                 bottomRight = point
             if (point[0] < bottomLeft[0] and point[1] > bottomLeft[1]):
                 bottomLeft = point
-            outputgrid = [topLeft, topRight, bottomRight, bottomLeft]
-        print outputgrid
+            outputgrid = np.array([topLeft, topRight, bottomRight, bottomLeft], np.float32)
+        self.sortedGrid = outputgrid
             
     def _distance(self, point):
         return math.sqrt(point[0]**2 + point[1]**2)
+        
+    def _warpGrid(self):
+        print self.sortedGrid
+        warpCoordinates = np.array([[0,0],[511,0],[511,511],[0,511]], np.float32)
+        transformValues = cv2.getPerspectiveTransform(self.sortedGrid, warpCoordinates)
+        self.warpImage = cv2.warpPerspective(self.image, transformValues, (512,512))
+        cv2.imwrite("warpImage.jpg", self.warpImage)
+        
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
