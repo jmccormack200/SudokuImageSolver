@@ -7,6 +7,8 @@ import pytesseract
 from matplotlib import pyplot as plt
 from PIL import Image
 
+#Still getting many false positives
+
 class Sudoku:
     
     def __init__(self, imagepath):
