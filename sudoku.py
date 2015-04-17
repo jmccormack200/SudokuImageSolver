@@ -62,7 +62,7 @@ class Sudoku:
                         if a > 0:
                             for b in range(0,a):
                                 contour_list[b] = contour_list[b+1]
-                                max_area[b-1] = max_area[b]
+                                max_area[b] = max_area[b+1]
                         contour_list[a] = contour
                         max_area[a] = area
                         break
@@ -72,8 +72,6 @@ class Sudoku:
             print contour_list[a][0]
             cv2.drawContours(self.image, contour_list, a, (0,255,0), 10)
         cv2.imwrite("contours.jpg", self.image)
-
-
         
 
     
