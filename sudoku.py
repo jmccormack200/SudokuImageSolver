@@ -54,7 +54,6 @@ class Sudoku:
             if area > 100:
                 perimeter = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.02*perimeter, True)
-<<<<<<< HEAD
                 for a in range(len(max_area)-1,-1,-1):
                     #print area
                     #print a
@@ -73,14 +72,8 @@ class Sudoku:
             print contour_list[a][0]
             cv2.drawContours(self.image, contour_list, a, (0,255,0), 10)
         cv2.imwrite("contours.jpg", self.image)
-=======
-                if area > max_area and len(approx)==4:
-                    large_Contour = contour
-                    max_area = area
-        
-        cv2.drawContours(self.image, [large_Contour], 0, (0,255,0), -1)
-        cv2.imwrite("contourswahhhhh.jpg", self.image)
->>>>>>> 3afe777613e41064f9b9cc97897c82a6e58ce60c
+
+
         
 
     
