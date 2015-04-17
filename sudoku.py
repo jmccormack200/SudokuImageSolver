@@ -45,19 +45,31 @@ class Sudoku:
         contours, hierarchy = cv2.findContours(self.Canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         large_Contour = 0
-        max_area = 0
+        max_area = [0,0,0,0,0,0,0,0,0]
+        contour_list = [0,0,0,0,0,0,0,0,0]
         
         for contour in contours:
-            print contour
             area = cv2.contourArea(contour)
             if area > 100:
                 perimeter = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.02*perimeter, True)
-                if area > max_area and len(approx)==4:
-                    large_Contour = contour
-                    max_area = area
-        
-        cv2.drawContours(self.image, [large_Contour], 0, (0,255,0), -1)
+                for a in range(len(max_area)-1,-1,-1):
+                    #print area
+                    #print a
+                    print max_area
+                    if area > max_area[a] and len(approx)==4:
+                        if a > 0:
+                            for b in range(0,a):
+                                contour_list[b] = contour_list[b+1]
+                                max_area[b-1] = max_area[b]
+                        contour_list[a] = contour
+                        max_area[a] = area
+                        break
+                    #print max_area
+        #print contour_list
+        for a in range(len(contour_list)):
+            print contour_list[a][0]
+            cv2.drawContours(self.image, contour_list, a, (0,255,0), 10)
         cv2.imwrite("contours.jpg", self.image)
         
 
