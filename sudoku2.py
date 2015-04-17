@@ -9,16 +9,14 @@ class Sudoku:
     def __init__(self, imagepath):
         self.image = cv2.imread(imagepath)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self._noiseRemove()
+        self._createBox()
+        self._gridSort()
 
     
-    def _noiseRemove(self):
-        print "True"
-        
-        gray = cv2.GaussianBlur(self.image,(5,5),0)
-        thresh = cv2.adaptiveThreshold(gray,255,1,1,11,2)
-        cv2.imwrite("thresh.jpg", thresh)
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    def _createBox(self):
+        self.laplacian = cv2.Laplacian(self.image, cv2.CV_8U)
+        cv2.imwrite("laplacian.jpg", self.image)
+        contours, hierarchy = cv2.findContours(self.laplacian, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         biggest = None
         max_area = 0
         for i in contours:
@@ -29,8 +27,34 @@ class Sudoku:
                         if area > max_area and len(approx)==4:
                                 biggest = approx
                                 max_area = area
-        print "True"
-        cv2.drawContours(self.image, [biggest], 0, (0,255,0), 10)
+        cv2.drawContours(self.image, [biggest], 0, (0,255,0), 3)
+        self.gridUnsorted = biggest
         cv2.imwrite("contours.jpg", self.image)
+        
+    def _gridSort(self):
+        #sort Top Left, Top Right, Bottom Right, Bottom Left
+        grid = self.gridUnsorted
+        
+        topLeft = [10000,10000]
+        topRight = [0,10000]
+        bottomLeft = [10000,0]
+        bottomRight = [0,0]
+        #print grid
+        for point in grid:
+            point = point[0]
+            if ((self._distance(point)) <= (self._distance(topLeft))):
+                topLeft = point
+            if (point[0] > topRight[0] and point[1] < topRight[1]):
+                topRight = point
+            if ((self._distance(point)) >= (self._distance(bottomRight))):
+                bottomRight = point
+            if (point[0] < bottomLeft[0] and point[1] > bottomLeft[1]):
+                bottomLeft = point
+            outputgrid = [topLeft, topRight, bottomRight, bottomLeft]
+        print outputgrid
+            
+    def _distance(self, point):
+        return math.sqrt(point[0]**2 + point[1]**2)
+        
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
