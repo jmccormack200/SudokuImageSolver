@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 import math
 from matplotlib import pyplot as plt
-import pylab as pl 
 
 class Sudoku:
     
@@ -19,10 +18,11 @@ class Sudoku:
         blurred = cv2.GaussianBlur(self.image,(5,5), 0)
         unsharp = self.image - blurred
         self.image = self.image + unsharp
-        #self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
+        self.Canny = cv2.Canny(self.image, 100,200, apertureSize = 3)
         #self.Canny = cv2.GaussianBlur(self.image,(3,3), 0)
         self.Laplacian = cv2.Laplacian(self.image,cv2.CV_64F)
-        cv2.imwrite("output.jpg", self.Canny)
+        cv2.imwrite("output.jpg", self.Laplacian)
+       # cv2.imwrite("output.jpg", self.Canny)
         
         
     def _getBox(self):
@@ -43,8 +43,8 @@ class Sudoku:
         cv2.imwrite('houghlines3.jpg',self.image)
         
     def _findContour(self):
-        contours, hierarchy = cv2.findContours(self.Laplacian, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-#          
+        contours, hierarchy = cv2.findContours(self.Canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
         large_Contour = 0
         max_area = 0
         
@@ -59,7 +59,7 @@ class Sudoku:
                     max_area = area
         
         cv2.drawContours(self.image, [large_Contour], 0, (0,255,0), -1)
-        cv2.imwrite("contourswahhhhhh.jpg", self.image)
+        cv2.imwrite("contourswahhhhh.jpg", self.image)
         
 
     
