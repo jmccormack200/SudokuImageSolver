@@ -2,6 +2,8 @@ import Image
 import cv2
 import numpy as np
 import math
+import pylab
+import image_slicer
 from matplotlib import pyplot as plt
 
 class Sudoku:
@@ -12,6 +14,7 @@ class Sudoku:
         self._createBox()
         self._gridSort()
         self._warpGrid()
+        self._separteImage()
 
     
     def _createBox(self):
@@ -58,12 +61,33 @@ class Sudoku:
         return math.sqrt(point[0]**2 + point[1]**2)
         
     def _warpGrid(self):
-        print self.sortedGrid
         warpCoordinates = np.array([[0,0],[511,0],[511,511],[0,511]], np.float32)
         transformValues = cv2.getPerspectiveTransform(self.sortedGrid, warpCoordinates)
         self.warpImage = cv2.warpPerspective(self.image, transformValues, (512,512))
         cv2.imwrite("warpImage.jpg", self.warpImage)
         
+    def _separteImage(self):
+        subdivision = (512/9) * -1
+        imageMat = (self.warpImage)
+        pointArray = []
+        count = 1
+        
+        for point in range(511,0,subdivision):
+            pointArray.append(point)
+        
+        segmentImage = np.zeros((56,56))
+        
+        for xPoint in range(len(pointArray) - 1):
+            for yPoint in range(len(pointArray) - 1):
+                for x in range(pointArray[xPoint],pointArray[xPoint+1],-1):
+                    for y in range(pointArray[yPoint],pointArray[yPoint+1],-1):
+                        segmentImage[x - pointArray[xPoint]][y-pointArray[yPoint]] = imageMat[x][y]
+                cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
+                segmentImage = np.zeros((56,56))
+                count += 1
+                
+                        
+                
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
