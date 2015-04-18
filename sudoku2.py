@@ -14,7 +14,10 @@ class Sudoku:
     def __init__(self, imagepath):
         self.image = cv2.imread(imagepath)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 789a44a83bcc71bfb9edac60e05eda900892ab2b
         self._createBox()
         self._gridSort()
         self._warpGrid()
@@ -65,29 +68,34 @@ class Sudoku:
         return math.sqrt(point[0]**2 + point[1]**2)
         
     def _warpGrid(self):
-        warpCoordinates = np.array([[0,0],[511,0],[511,511],[0,511]], np.float32)
+        warpCoordinates = np.array([[0,0],[1023,0],[1023,1023],[0,1023]], np.float32)
         transformValues = cv2.getPerspectiveTransform(self.sortedGrid, warpCoordinates)
-        self.warpImage = cv2.warpPerspective(self.image, transformValues, (512,512))
+        self.warpImage = cv2.warpPerspective(self.image, transformValues, (1023,1023))
         cv2.imwrite("warpImage.jpg", self.warpImage)
         
     def _separteImage(self):
-        subdivision = (512/9) * -1
+        subdivision = (1024/9) * -1
         imageMat = (self.warpImage)
         pointArray = []
         count = 1
         
-        for point in range(511,0,subdivision):
+        for point in range(1023,0,subdivision):
             pointArray.append(point)
         
-        segmentImage = np.zeros((56,56))
+        segmentImage = np.zeros((112,112))
         
         for xPoint in range(len(pointArray) - 1):
             for yPoint in range(len(pointArray) - 1):
                 for x in range(pointArray[xPoint],pointArray[xPoint+1],-1):
                     for y in range(pointArray[yPoint],pointArray[yPoint+1],-1):
                         segmentImage[x - pointArray[xPoint]][y-pointArray[yPoint]] = imageMat[x][y]
+<<<<<<< HEAD
 		cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
                 segmentImage = np.zeros((56,56))
+=======
+                cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
+                segmentImage = np.zeros((112,112))
+>>>>>>> 789a44a83bcc71bfb9edac60e05eda900892ab2b
                 count += 1
                 
     def _extract(self):
