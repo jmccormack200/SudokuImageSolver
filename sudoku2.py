@@ -14,10 +14,6 @@ class Sudoku:
     def __init__(self, imagepath):
         self.image = cv2.imread(imagepath)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-<<<<<<< HEAD
-
-=======
->>>>>>> 789a44a83bcc71bfb9edac60e05eda900892ab2b
         self._createBox()
         self._gridSort()
         self._warpGrid()
@@ -89,24 +85,19 @@ class Sudoku:
                 for x in range(pointArray[xPoint],pointArray[xPoint+1],-1):
                     for y in range(pointArray[yPoint],pointArray[yPoint+1],-1):
                         segmentImage[x - pointArray[xPoint]][y-pointArray[yPoint]] = imageMat[x][y]
-<<<<<<< HEAD
-		cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
-                segmentImage = np.zeros((56,56))
-=======
                 cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
-                segmentImage = np.zeros((112,112))
->>>>>>> 789a44a83bcc71bfb9edac60e05eda900892ab2b
+                segmentImage = np.zeros((56,56))
                 count += 1
                 
     def _extract(self):
         #image = cv2.imread("output4.jpg", cv2.CV_LOAD_IMAGE_GRAYSCALE)
-	for a in range(1,82):
-	    imageString = ("output" + str(a) +  ".jpg")
-	    image = Image.open(imageString)
-	    #image_file = image.convert('1')	
-            print "letter = " + str(a)  
-            print pytesseract.image_to_string(image, config='-psm 10')                 
-                
+        for a in range(1,82):
+            imageString = ("output" + str(a) +  ".jpg")
+            image = Image.open(imageString)
+            #image_file = image.convert('1')	
+                print "letter = " + str(a)  
+                print pytesseract.image_to_string(image, config='-psm 10')                 
+                    
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
