@@ -86,8 +86,20 @@ class Sudoku:
                 for x in range(pointArray[xPoint],pointArray[xPoint+1],-1):
                     for y in range(pointArray[yPoint],pointArray[yPoint+1],-1):
                         segmentImage[x - pointArray[xPoint]][y-pointArray[yPoint]] = imageMat[x][y]
+	
 		cv2.imwrite("output" + str(count) + ".jpg", segmentImage)
-                segmentImage = np.zeros((56,56))
+       
+		 
+	        imageL = cv2.imread("output" + str(count) + ".jpg")
+	        imageL = cv2.cvtColor(imageL, cv2.COLOR_BGR2GRAY)
+		#imageLP = cv2.Laplacian(imageL, cv2.CV_8U)
+		#ret, thresh = cv2.threshold(imageLP, 10, 255, cv2.THRESH_BINARY)
+		
+		imageB = cv2.GaussianBlur(imageL, (5,5), 0)
+		thresh = cv2.addWeighted(imageL, 1.5, imageB, -0.5, 50)	
+	
+		cv2.imwrite("output" + str(count) + ".jpg", thresh)
+		segmentImage = np.zeros((56,56))
                 count += 1
                 
     def _extract(self):
@@ -98,7 +110,7 @@ class Sudoku:
 	    #image_file = image.convert('1')	
             print "letter = " + str(a)  
             print pytesseract.image_to_string(image, config='-psm 10')                 
-                
+            #print pytesseract.image_to_string(image)   
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
