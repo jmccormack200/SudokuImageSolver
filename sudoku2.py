@@ -3,11 +3,8 @@ import cv2
 import numpy as np
 import math
 import pylab
-import pytesseract
+import image_slicer
 from matplotlib import pyplot as plt
-from PIL import Image
-
-#Still getting many false positives
 
 class Sudoku:
     
@@ -19,6 +16,7 @@ class Sudoku:
         self._warpGrid()
         self._separteImage()
         self._extract()
+
     
     def _createBox(self):
         self.laplacian = cv2.Laplacian(self.image, cv2.CV_8U)
@@ -64,21 +62,21 @@ class Sudoku:
         return math.sqrt(point[0]**2 + point[1]**2)
         
     def _warpGrid(self):
-        warpCoordinates = np.array([[0,0],[1023,0],[1023,1023],[0,1023]], np.float32)
+        warpCoordinates = np.array([[0,0],[511,0],[511,511],[0,511]], np.float32)
         transformValues = cv2.getPerspectiveTransform(self.sortedGrid, warpCoordinates)
-        self.warpImage = cv2.warpPerspective(self.image, transformValues, (1023,1023))
+        self.warpImage = cv2.warpPerspective(self.image, transformValues, (512,512))
         cv2.imwrite("warpImage.jpg", self.warpImage)
         
     def _separteImage(self):
-        subdivision = (1024/9) * -1
+        subdivision = (512/9) * -1
         imageMat = (self.warpImage)
         pointArray = []
         count = 1
         
-        for point in range(1023,0,subdivision):
+        for point in range(511,0,subdivision):
             pointArray.append(point)
         
-        segmentImage = np.zeros((112,112))
+        segmentImage = np.zeros((56,56))
         
         for xPoint in range(len(pointArray) - 1):
             for yPoint in range(len(pointArray) - 1):
@@ -93,11 +91,19 @@ class Sudoku:
         #image = cv2.imread("output4.jpg", cv2.CV_LOAD_IMAGE_GRAYSCALE)
         for a in range(1,82):
             imageString = ("output" + str(a) +  ".jpg")
-            image = Image.open(imageString)
-            #image_file = image.convert('1')	
-                print "letter = " + str(a)  
-                print pytesseract.image_to_string(image, config='-psm 10')                 
-                    
+            image = cv2.imread(imageString)
+            image = image[10:51,10:51]
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            binary = cv2.adaptiveThreshold(
+                src=gray, maxValue=255,
+                adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                thresholdType=cv2.THRESH_BINARY, blockSize=11, C=2)
+            blurred = cv2.medianBlur(binary, ksize=5)
+            gBlur = cv2.GaussianBlur(blurred, (5,5), 0)
+            sharpened = cv2.addWeighted(blurred, 1, gBlur, -2.50, 100)
+            cv2.imwrite("output" + str(a) + ".jpg", sharpened)
+        
+
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
