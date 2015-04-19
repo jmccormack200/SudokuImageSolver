@@ -10,7 +10,35 @@ import os
 # GLOBAL VARIABLES
 grid_size = 81
 
+###############################
+#
+# tessPy
+#
+# ipLimage_from_array is from tfeIdmann's github
+# the Sudoku solver was borrowed from activestate.com
+# getTesseract was created by us with help from tfeIdmann's github 
+#
+# This uses the python tesseract wrapper to
+# find the data points and put them in a grid
+# 
+# Then the puzzle is solved
+#
+################################
 
+
+###############################
+#
+# iplimage from array
+#
+# Inputs: image array
+# 
+# Outputs: image array in an old OpenCV
+#           format.
+#
+#   This was needed to get tesseract to be able
+#   to use the openCV image.
+#
+################################
 def iplimage_from_array(source):
     """
     This function and information on Tesseract found from:
@@ -25,33 +53,56 @@ def iplimage_from_array(source):
     bitmap = cv.CreateImageHeader((h, w), cv.IPL_DEPTH_8U, 1)
     cv.SetData(bitmap, source.tostring(), source.dtype.itemsize * h)
     return bitmap
-    
+###############################
+#
+# Get Tesseract
+#
+# Inputs: none
+# 
+# Outputs: an array of the sudoku data
+#
+#   This is where the images are actually processed
+#
+################################    
 def getTesseract():    
     # init tesseract
     api = tesseract.TessBaseAPI()
+    #Identify that it is for english
     api.Init(".", "eng", tesseract.OEM_DEFAULT)
+    #Set for single block of text
+    #Worked better than single character
     api.SetPageSegMode(tesseract.PSM_SINGLE_BLOCK)
+    #Only whitelist numbers 1-9
     api.SetVariable("tessedit_char_whitelist", "123456789")
 
 
     grid = []
+    #iterate for each picture
     for a in range(1,82):
+        #open image
         imageString = ("output" + str(a) +  ".jpg")
         image = cv2.imread(imageString)
+        #convert to grey
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        #convert to the old array type
         ipl = iplimage_from_array(image)
+        #Apply the tesseract library
         tesseract.SetCvImage(ipl, api)
+        #read the text
         ocr_text = api.GetUTF8Text()
         #print "line = " + str(a)
         #print ocr_text
         try:
+            #if a number, save the number
             if ocr_text[0] != " ":
                 grid.append(ocr_text[0])
             else:   
+                #else mark blank
                 grid.append(".")
         except:
+            #if error, set as blank
             grid.append(".")
-    
+    #return the entire grid
     return grid
 
 '''
@@ -164,11 +215,9 @@ def printGrid (grid, add_zeros):
   
   
 def main ():
-  #sampleGrid = ['2', '1', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '3', '1', '.', '.', '.', '.', '9', '4', '.', '.', '.', '.', '7', '8', '2', '5', '.', '.', '4', '.', '.', '.', '.', '.', '.', '6', '.', '.', '.', '.', '.', '1', '.', '.', '.', '.', '8', '2', '.', '.', '.', '7', '.', '.', '9', '.', '.', '.', '.', '.', '.', '.', '.', '3', '1', '.', '4', '.', '.', '.', '.', '.', '.', '.', '3', '8', '.']
-  #sampleGrid = ['.', '.', '3', '.', '2', '.', '6', '.', '.', '9', '.', '.', '3', '.', '5', '.', '.', '1', '.', '.', '1', '8', '.', '6', '4', '.', '.', '.', '.', '8', '1', '.', '2', '9', '.', '.', '7', '.', '.', '.', '.', '.', '.', '.', '8', '.', '.', '6', '7', '.', '8', '2', '.', '.', '.', '.', '2', '6', '.', '9', '5', '.', '.', '8', '.', '.', '2', '.', '3', '.', '.', '9', '.', '.', '5', '.', '1', '.', '3', '.', '.']
-  sampleGrid = getTesseract()
-  printGrid(sampleGrid, 0)
-  if hasSolution (sampleGrid):
+  sampleGrid = getTesseract() #call our tesseract function
+  printGrid(sampleGrid, 0) #apply their sudoku solver
+  if hasSolution (sampleGrid): #print if exists, otherwise print no solution
     printGrid(sampleGrid, 0)
   else: print 'NO SOLUTION'
 
