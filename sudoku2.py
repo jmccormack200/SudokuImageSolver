@@ -100,7 +100,7 @@ class Sudoku:
                 thresholdType=cv2.THRESH_BINARY, blockSize=11, C=2)
             blurred = cv2.medianBlur(binary, ksize=5)
             gBlur = cv2.GaussianBlur(blurred, (5,5), 0)
-            sharpened = cv2.addWeighted(blurred, 1, gBlur, -2.50, 100)
+            sharpened = cv2.addWeighted(binary, 1, gBlur, -2.5, 200)
             cv2.imwrite("output" + str(a) + ".jpg", sharpened)
         
 
