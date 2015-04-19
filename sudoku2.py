@@ -4,7 +4,32 @@ import numpy as np
 import math
 import pylab
 import image_slicer
+import cv2.cv as cv
+import numpy as np
+import tesseract
+import sudoku
+import tessPy #external python file
+
 from matplotlib import pyplot as plt
+
+###############################
+#
+# Sudoku
+#
+# Class is instantiated with an image path
+# Methods allow for processing of the data
+# 
+#
+#
+# instance variables:
+# self.row: The width of the image
+# self.column: The height of the image
+# self.image: The image loaded from the path
+# self.paddedimage: The image, padded with 0's
+# self.fft: The fft of the image
+# self.fshift: The shifted fft
+#
+################################
 
 class Sudoku:
     
@@ -110,3 +135,4 @@ class Sudoku:
         
 if __name__ == "__main__":
     sudoku = Sudoku("sudoku.jpg")
+    tessPy.main()
