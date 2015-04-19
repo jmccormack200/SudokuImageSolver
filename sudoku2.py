@@ -92,15 +92,18 @@ class Sudoku:
         for a in range(1,82):
             imageString = ("output" + str(a) +  ".jpg")
             image = cv2.imread(imageString)
-            image = image[10:51,10:51]
+            image = image[11:51,11:51]
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             binary = cv2.adaptiveThreshold(
                 src=gray, maxValue=255,
                 adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                 thresholdType=cv2.THRESH_BINARY, blockSize=11, C=2)
+            #blurred = cv2.medianBlur(binary, ksize=5)
+            #gBlur = cv2.GaussianBlur(blurred, (5,5), 0)
+            #sharpened = cv2.addWeighted(binary, 1, gBlur, -2.5, 255)
             blurred = cv2.medianBlur(binary, ksize=5)
             gBlur = cv2.GaussianBlur(blurred, (5,5), 0)
-            sharpened = cv2.addWeighted(binary, 1, gBlur, -2.5, 200)
+            sharpened = cv2.addWeighted(binary, 1, gBlur, -2.55, 255)
             cv2.imwrite("output" + str(a) + ".jpg", sharpened)
         
 
