@@ -1,5 +1,0 @@
-image.lo: image.cpp /usr/include/stdc-predef.h image.h
-
-/usr/include/stdc-predef.h:
-
-image.h:
